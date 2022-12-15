@@ -9,7 +9,7 @@ const route = useRoute()
 
 onMounted(async () => {
   const taskId = route.params.id
-  if (taskId) taskToEdit = await taskService.getTask(taskId)
+  if (taskId) taskToEdit.value = await taskService.getTask(taskId)
 })
 </script>
 
