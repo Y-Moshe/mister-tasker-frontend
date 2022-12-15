@@ -46,7 +46,7 @@ function generateTask() {
   const task = {
     _id: utilService.makeId(),
     title: utilService.makeLorem(5),
-    status: Math.random() > 0.5 ? 'success' : 'failed',
+    status: Math.random() > 0.5 ? 'done' : 'failed',
     description: utilService.makeLorem(10),
     importance: utilService.getRandomIntInclusive(1, 3),
     lastTriedAt: Date.now(),
