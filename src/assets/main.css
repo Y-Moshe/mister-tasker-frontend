@@ -1,7 +1,12 @@
 @import './base.css';
 
-.main-dashboard {
+.main-layout {
   max-width: 1440px;
   margin-inline: auto;
   margin-block: 100px;
+}
+
+.table-actions {
+  display: flex;
+  justify-content: space-between;
 }
