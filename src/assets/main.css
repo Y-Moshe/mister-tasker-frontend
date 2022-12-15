@@ -1,12 +1,8 @@
 @import './base.css';
+@import './helpers.css';
 
 .main-layout {
   max-width: 1440px;
   margin-inline: auto;
   margin-block: 100px;
-}
-
-.table-actions {
-  display: flex;
-  justify-content: space-between;
 }

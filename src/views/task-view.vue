@@ -47,7 +47,7 @@ async function handleDeleteTask(taskId) {
   <main>
     <h1>Mister tasker</h1>
 
-    <section class="table-actions">
+    <section class="flex justify-content-between">
       <el-button type="primary" @click="generateTasks">Generate tasks</el-button>
       <el-button type="danger" @click="clearTasks">Clear tasks</el-button>
       <el-button type="success" @click="generateNewTask">Generate new task</el-button>
