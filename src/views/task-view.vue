@@ -59,7 +59,7 @@ async function handleDeleteTask(taskId) {
       </el-button>
     </section>
 
-    <el-table :data="tasks">
+    <el-table :data="tasks" height="800" style="width: 100%">
 
       <el-table-column type="expand">
         <template #default="scope">

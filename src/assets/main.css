@@ -4,7 +4,6 @@
 .main-layout {
   max-width: 1440px;
   margin-inline: auto;
-  margin-block: 100px;
 }
 
 .task-preview {
