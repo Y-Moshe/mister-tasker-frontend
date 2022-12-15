@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 
 import { taskService } from '../services/task.service'
 import taskActions from '../components/task-actions.vue'
+import taskPreview from '../components/task-preview.vue'
 
 const tasks = ref([])
 const isTaskWorkerRunning = ref(true)
@@ -60,6 +61,12 @@ async function handleDeleteTask(taskId) {
 
     <el-table :data="tasks">
 
+      <el-table-column type="expand">
+        <template #default="scope">
+          <task-preview :task="scope.row" @delete="handleDeleteTask" />
+        </template>
+      </el-table-column>
+
       <el-table-column prop="title" label="Title" min-width="300" />
 
       <el-table-column prop="importance" label="Importance" sortable min-width="100" />
@@ -70,9 +77,7 @@ async function handleDeleteTask(taskId) {
 
       <el-table-column label="Actions" min-width="200" align="center">
         <template #default="scope">
-          <task-actions :task="scope.row"
-          @delete="handleDeleteTask"
-          />
+          <task-actions :task="scope.row" @delete="handleDeleteTask" />
         </template>
       </el-table-column>
 

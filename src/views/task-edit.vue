@@ -16,7 +16,7 @@ onMounted(async () => {
 <template>
 
   <main class="task-edit">
-
+    <pre>{{ taskToEdit }}</pre>
   </main>
 
 </template>
