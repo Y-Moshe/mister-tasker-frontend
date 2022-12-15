@@ -1,4 +1,5 @@
 import { httpService } from './http.service'
+import { utilService } from './util.service'
 
 function getTasks() {
   return httpService.get('/task')
@@ -41,6 +42,25 @@ function getEmptyTask() {
   }
 }
 
+function generateTask() {
+  const task = {
+    _id: utilService.makeId(),
+    title: utilService.makeLorem(5),
+    status: Math.random() > 0.5 ? 'success' : 'failed',
+    description: utilService.makeLorem(10),
+    importance: utilService.getRandomIntInclusive(1, 3),
+    lastTriedAt: Date.now(),
+    triesCount: utilService.getRandomIntInclusive(1, 5),
+    doneAt: Date.now(),
+    errors: []
+  }
+  return task
+}
+
+function generateTasks(count) {
+  return new Array(count).fill(null).map(() => generateTask())
+}
+
 export const taskService = {
   getTasks,
   getTask,
@@ -49,5 +69,7 @@ export const taskService = {
   performTask,
   deleteTask,
   deleteAllTasks,
-  getEmptyTask
+  getEmptyTask,
+  generateTask,
+  generateTasks
 }
