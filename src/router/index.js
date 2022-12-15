@@ -1,17 +1,23 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import homeView from '../views/home-view.vue'
+import taskView from '../views/task-view.vue'
+import taskEdit from '../views/task-edit.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/home'
+      redirect: '/task'
     },
     {
-      path: '/home',
-      name: 'home',
-      component: homeView
+      path: '/task',
+      name: 'task',
+      component: taskView
+    },
+    {
+      path: '/task/edit/:id?',
+      name: 'task-edit',
+      component: taskEdit
     }
   ]
 })
