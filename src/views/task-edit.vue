@@ -16,17 +16,17 @@ onMounted(async () => {
 
 const errorsOptions = computed(() => {
   return [
-    'Error 1',
-    'Error 2',
-    'Error 3',
-    'Error 4'
+    'High Temparture',
+    'Server busy',
+    'Server under maintanence',
+    'Requested resource is no longer available',
+    'Gateway timeout'
   ]
 })
 
 async function saveTask() {
   const action = taskId ? taskService.updateTask : taskService.addTask
   await action(taskToEdit)
-console.log('taskId', taskId)
   ElMessage.success('Task saved successfully!')
   router.push('/')
 }
@@ -52,19 +52,16 @@ console.log('taskId', taskId)
       </el-form-item>
 
       <el-form-item label="Importance">
-        <el-input v-model="taskToEdit.importance" type="number" />
+        <el-input v-model="taskToEdit.importance" type="number" min="1" max="3" />
       </el-form-item>
 
       <el-form-item label="Tries count">
-        <el-input v-model="taskToEdit.triesCount" type="number" />
+        <el-input v-model="taskToEdit.triesCount" type="number" min="1" max="5" />
       </el-form-item>
 
       <el-form-item label="Tries count">
         <el-select v-model="taskToEdit.errors" placeholder="Select errors" multiple>
-          <el-option v-for="error in errorsOptions"
-            :key="error"
-            :label="error"
-            :value="error" />
+          <el-option v-for="error in errorsOptions" :key="error" :label="error" :value="error" />
         </el-select>
       </el-form-item>
 

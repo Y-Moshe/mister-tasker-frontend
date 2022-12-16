@@ -13,19 +13,14 @@ onMounted(async () => {
   tasks.value = await taskService.getTasks()
 })
 
-function generateTasks() {
-  tasks.value.push(
-    ...taskService.generateTasks(10)
-  )
+async function generateTasks(count) {
+  const generatedTasks = await taskService.generateTasks(count)
+  tasks.value.push(...generatedTasks)
 }
 
 async function clearTasks() {
   // await taskService.deleteAllTasks()
   tasks.value = []
-}
-
-function generateNewTask() {
-  tasks.value.push(taskService.generateTask())
 }
 
 async function toggleTaskWorker() {
@@ -34,9 +29,8 @@ async function toggleTaskWorker() {
 }
 
 async function handleStartTask(task) {
-  task.status = 'running'
+  task.status = taskService.STATUS.RUNNING
   const updatedTask = await taskService.performTask(task)
-  console.log('updatedTask', updatedTask)
 
   const idx = tasks.value.findIndex(({ _id }) => _id === task._id)
   tasks.value[idx] = updatedTask
@@ -58,9 +52,9 @@ async function handleDeleteTask(taskId) {
     <h1>Mister tasker</h1>
 
     <section class="flex justify-content-between">
-      <el-button type="primary" @click="generateTasks">Generate tasks</el-button>
+      <el-button type="primary" @click="generateTasks(10)">Generate tasks</el-button>
       <el-button type="danger" @click="clearTasks">Clear tasks</el-button>
-      <el-button type="success" @click="generateNewTask">Generate new task</el-button>
+      <el-button type="success" @click="generateTasks(1)">Generate new task</el-button>
       <el-button
         :type="isTaskWorkerRunning ? 'warning' : 'success'"
         @click="toggleTaskWorker">

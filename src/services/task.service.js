@@ -1,5 +1,4 @@
 import { httpService } from './http.service'
-import { utilService } from './util.service'
 
 function getTasks() {
   return httpService.get('/task')
@@ -11,6 +10,10 @@ function getTask(taskId) {
 
 function addTask(task) {
   return httpService.post('/task', task)
+}
+
+function generateTasks(count) {
+  return httpService.post('/task/generate', { count })
 }
 
 function updateTask(task) {
@@ -42,23 +45,19 @@ function getEmptyTask() {
   }
 }
 
-function generateTask() {
-  const task = {
-    _id: utilService.makeId(),
-    title: utilService.makeLorem(5),
-    status: Math.random() > 0.5 ? 'done' : 'failed',
-    description: utilService.makeLorem(10),
-    importance: utilService.getRandomIntInclusive(1, 3),
-    lastTriedAt: Date.now(),
-    triesCount: utilService.getRandomIntInclusive(1, 5),
-    doneAt: Date.now(),
-    errors: []
-  }
-  return task
-}
+const ERRORS = [
+  'High Temparture',
+  'Server busy',
+  'Server under maintanence',
+  'Requested resource is no longer available',
+  'Gateway timeout'
+]
 
-function generateTasks(count) {
-  return new Array(count).fill(null).map(() => generateTask())
+const STATUS = {
+  NEW: 'new',
+  RUNNING: 'running',
+  FAILED: 'failed',
+  DONE: 'done'
 }
 
 export const taskService = {
@@ -70,6 +69,7 @@ export const taskService = {
   deleteTask,
   deleteAllTasks,
   getEmptyTask,
-  generateTask,
-  generateTasks
+  generateTasks,
+  ERRORS,
+  STATUS
 }
