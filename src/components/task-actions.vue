@@ -18,7 +18,7 @@ const STATUS = taskService.STATUS
       Retry
     </el-button>
 
-    <router-link :to="'/task/edit/' + task._id">
+    <router-link :to="'/task/edit/' + task._id" v-if="task.status !== STATUS.RUNNING">
       <el-button plain>Update</el-button>
     </router-link>
 

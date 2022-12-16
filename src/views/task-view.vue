@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { capitalize } from 'lodash'
 
 import { taskService } from '../services/task.service'
 import taskActions from '../components/task-actions.vue'
@@ -8,6 +9,7 @@ import taskPreview from '../components/task-preview.vue'
 const tasks = ref([])
 const isTaskWorkerRunning = ref(true)
 const workerBtnTxt = computed(() => isTaskWorkerRunning.value ? 'Stop' : 'Start')
+const STATUS = taskService.STATUS
 
 onMounted(async () => {
   tasks.value = await taskService.getTasks()
@@ -19,7 +21,7 @@ async function generateTasks(count) {
 }
 
 async function clearTasks() {
-  // await taskService.deleteAllTasks()
+  await taskService.deleteAllTasks()
   tasks.value = []
 }
 
@@ -29,7 +31,7 @@ async function toggleTaskWorker() {
 }
 
 async function handleStartTask(task) {
-  task.status = taskService.STATUS.RUNNING
+  task.status = STATUS.RUNNING
   const updatedTask = await taskService.performTask(task)
 
   const idx = tasks.value.findIndex(({ _id }) => _id === task._id)
@@ -42,6 +44,19 @@ async function handleDeleteTask(taskId) {
 
   await taskService.deleteTask(taskId)
   tasks.value.splice(idx, 1)
+}
+
+function getStatusType(status) {
+  switch (status) {
+    case STATUS.DONE:
+      return 'success'
+    case STATUS.FAILED:
+      return 'danger'
+    case STATUS.RUNNING:
+      return 'warning'
+    default:
+      return ''
+  }
 }
 
 </script>
@@ -74,7 +89,13 @@ async function handleDeleteTask(taskId) {
 
       <el-table-column prop="importance" label="Importance" sortable min-width="100" />
 
-      <el-table-column prop="status" label="Status" min-width="70" />
+      <el-table-column prop="status" label="Status" min-width="70">
+        <template #default="scope">
+          <el-tag :type="getStatusType(scope.row.status)">
+            {{ capitalize(scope.row.status) }}
+          </el-tag>
+        </template>
+      </el-table-column>
 
       <el-table-column prop="triesCount" label="Tries count" min-width="120" sortable />
 
