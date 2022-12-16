@@ -67,9 +67,12 @@ function getStatusType(status) {
     <h1>Mister tasker</h1>
 
     <section class="flex justify-content-between">
+      <router-link to="/task/edit">
+        <el-button type="primary" link>Add task</el-button>
+      </router-link>
+      <el-button type="success" @click="generateTasks(1)">Generate new task</el-button>
       <el-button type="primary" @click="generateTasks(10)">Generate tasks</el-button>
       <el-button type="danger" @click="clearTasks">Clear tasks</el-button>
-      <el-button type="success" @click="generateTasks(1)">Generate new task</el-button>
       <el-button
         :type="isTaskWorkerRunning ? 'warning' : 'success'"
         @click="toggleTaskWorker">
