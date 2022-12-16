@@ -12,9 +12,9 @@ const STATUS = taskService.STATUS
 
 <template>
   <article class="task-preview">
-    <h6>Description:</h6>
+    <h3>Description:</h3>
     <p>{{ task.description }}</p>
-    <h6>Errors:</h6>
+    <h3>Errors:</h3>
     <p>{{ task.errors.join(', ') }}</p>
     <p>Created at: {{ task.createdAt }} | Last tried at: {{ task.lastTriedAt }} | Done at: {{ task.doneAt }}</p>
     <el-popconfirm
