@@ -8,6 +8,7 @@
 
 .task-preview {
   position: relative;
+  margin-inline: 40px;
 }
 
 .task-preview h6 {
