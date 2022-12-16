@@ -1,14 +1,16 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 
 import { taskService } from '../services/task.service'
 
 const taskToEdit = ref(taskService.getEmptyTask())
 const route = useRoute()
+const router = useRouter()
+const taskId = route.params.id
 
 onMounted(async () => {
-  const taskId = route.params.id
   if (taskId) taskToEdit.value = await taskService.getTask(taskId)
 })
 
@@ -21,8 +23,12 @@ const errorsOptions = computed(() => {
   ]
 })
 
-function saveTask() {
-  console.log('TODO: Save')
+async function saveTask() {
+  const action = taskId ? taskService.updateTask : taskService.addTask
+  await action(taskToEdit)
+console.log('taskId', taskId)
+  ElMessage.success('Task saved successfully!')
+  router.push('/')
 }
 </script>
 

@@ -33,11 +33,20 @@ async function toggleTaskWorker() {
   isTaskWorkerRunning.value = !isTaskWorkerRunning.value
 }
 
+async function handleStartTask(task) {
+  task.status = 'running'
+  const updatedTask = await taskService.performTask(task)
+  console.log('updatedTask', updatedTask)
+
+  const idx = tasks.value.findIndex(({ _id }) => _id === task._id)
+  tasks.value[idx] = updatedTask
+}
+
 async function handleDeleteTask(taskId) {
   const idx = tasks.value.findIndex(({ _id }) => _id === taskId)
   if (idx === -1) return
 
-  // await taskService.deleteTask(taskId)
+  await taskService.deleteTask(taskId)
   tasks.value.splice(idx, 1)
 }
 
@@ -77,7 +86,10 @@ async function handleDeleteTask(taskId) {
 
       <el-table-column label="Actions" min-width="200" align="center">
         <template #default="scope">
-          <task-actions :task="scope.row" @delete="handleDeleteTask" />
+          <task-actions :task="scope.row"
+            @delete="handleDeleteTask"
+            @start="handleStartTask"
+            @retry="handleStartTask" />
         </template>
       </el-table-column>
 

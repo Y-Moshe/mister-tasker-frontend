@@ -17,8 +17,8 @@ function updateTask(task) {
   return httpService.put('/task/' + task._id, task)
 }
 
-function performTask(taskId) {
-  return httpService.put(`/task/${taskId}/start`)
+function performTask(task) {
+  return httpService.put(`/task/${task._id}/start`, task)
 }
 
 function deleteTask(taskId) {
