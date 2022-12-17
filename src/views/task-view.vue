@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { capitalize } from 'lodash'
+import { capitalize, debounce } from 'lodash'
 
 import { taskService } from '../services/task.service'
 import {
@@ -8,10 +8,12 @@ import {
   SOCKET_EVENT_WORKER_TASK_ENDED,
   SOCKET_EVENT_WORKER_TASK_STARTED
 } from '../services/socket.service'
+
 import taskActions from '../components/task-actions.vue'
 import taskPreview from '../components/task-preview.vue'
 
 const tasks = ref([])
+const searchForm = ref({ txt: '' })
 const isTaskWorkerRunning = ref(true)
 const workerBtnTxt = computed(() => isTaskWorkerRunning.value ? 'Stop' : 'Start')
 const STATUS = taskService.STATUS
@@ -29,7 +31,6 @@ onUnmounted(() => {
 })
 
 function updateTask(task) {
-  console.log('task', task)
   const idx = tasks.value.findIndex(({ _id }) => _id === task._id)
   tasks.value[idx] = task
 }
@@ -46,7 +47,8 @@ async function clearTasks() {
 
 async function toggleTaskWorker() {
   // await taskService.startWorker()
-  isTaskWorkerRunning.value = !isTaskWorkerRunning.value
+  const { isWorkerOn } = await taskService.toggleTaskWorker()
+  isTaskWorkerRunning.value = isWorkerOn
 }
 
 async function handleStartTask(task) {
@@ -78,6 +80,13 @@ function getStatusType(status) {
   }
 }
 
+const handleSearch = debounce(async () => {
+  const filterBy = {
+    text: searchForm.value.txt
+  }
+  tasks.value = await taskService.getTasks(filterBy)
+}, 500)
+
 </script>
 
 <template>
@@ -98,6 +107,10 @@ function getStatusType(status) {
         {{ workerBtnTxt }} service worker
       </el-button>
     </section>
+    
+    <el-form style="margin: 15px;">
+      <el-input v-model="searchForm.txt" @input="handleSearch" placeholder="Type to search" />
+    </el-form>
 
     <el-table :data="tasks" height="800" style="width: 100%">
 

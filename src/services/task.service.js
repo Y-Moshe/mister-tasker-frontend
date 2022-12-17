@@ -1,7 +1,7 @@
 import { httpService } from './http.service'
 
-function getTasks() {
-  return httpService.get('/task')
+function getTasks(filterBy = {}) {
+  return httpService.get('/task', filterBy)
 }
 
 function getTask(taskId) {
@@ -22,6 +22,10 @@ function updateTask(task) {
 
 function performTask(task) {
   return httpService.put(`/task/${task._id}/start`, task)
+}
+
+function toggleTaskWorker() {
+  return httpService.put('/task/workerToggle')
 }
 
 function deleteTask(taskId) {
@@ -70,6 +74,7 @@ export const taskService = {
   deleteAllTasks,
   getEmptyTask,
   generateTasks,
+  toggleTaskWorker,
   ERRORS,
   STATUS
 }
