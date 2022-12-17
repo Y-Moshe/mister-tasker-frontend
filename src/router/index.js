@@ -3,7 +3,7 @@ import taskView from '../views/task-view.vue'
 import taskEdit from '../views/task-edit.vue'
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
