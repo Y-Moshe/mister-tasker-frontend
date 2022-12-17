@@ -26,7 +26,7 @@ const errorsOptions = computed(() => {
 
 async function saveTask() {
   const action = taskId ? taskService.updateTask : taskService.addTask
-  await action(taskToEdit)
+  await action(taskToEdit.value)
   ElMessage.success('Task saved successfully!')
   router.push('/')
 }
