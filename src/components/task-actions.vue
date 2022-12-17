@@ -14,7 +14,7 @@ const STATUS = taskService.STATUS
       Start
     </el-button>
     <el-button plain type="danger"
-      @click="$emit('retry', task)" v-else-if="task.status === STATUS.FAILED && task.triesCount < 5">
+      @click="$emit('retry', task)" v-else-if="task.status === STATUS.FAILED">
       Retry
     </el-button>
 
