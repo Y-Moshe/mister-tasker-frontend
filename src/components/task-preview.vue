@@ -21,7 +21,7 @@ const STATUS = taskService.STATUS
       v-if="task.status === STATUS.DONE"
       :icon="null"
       confirm-button-text="Yes" 
-      title="Are you sure to delete this?"
+      title="Are you sure you want to delete this?"
       @confirm="$emit('delete', task._id)">
       <template #reference>
         <el-button type="danger" class="delete-btn" :icon="Delete"></el-button>
