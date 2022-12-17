@@ -1,8 +1,13 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { capitalize } from 'lodash'
 
 import { taskService } from '../services/task.service'
+import {
+  socketService,
+  SOCKET_EVENT_WORKER_TASK_ENDED,
+  SOCKET_EVENT_WORKER_TASK_STARTED
+} from '../services/socket.service'
 import taskActions from '../components/task-actions.vue'
 import taskPreview from '../components/task-preview.vue'
 
@@ -13,7 +18,21 @@ const STATUS = taskService.STATUS
 
 onMounted(async () => {
   tasks.value = await taskService.getTasks()
+
+  socketService.on(SOCKET_EVENT_WORKER_TASK_STARTED, updateTask)
+  socketService.on(SOCKET_EVENT_WORKER_TASK_ENDED, updateTask)
 })
+
+onUnmounted(() => {
+  socketService.off(SOCKET_EVENT_WORKER_TASK_STARTED)
+  socketService.off(SOCKET_EVENT_WORKER_TASK_ENDED)
+})
+
+function updateTask(task) {
+  console.log('task', task)
+  const idx = tasks.value.findIndex(({ _id }) => _id === task._id)
+  tasks.value[idx] = task
+}
 
 async function generateTasks(count) {
   const generatedTasks = await taskService.generateTasks(count)
