@@ -1,5 +1,4 @@
 <script setup>
-import { defineProps } from 'vue'
 import { Delete } from '@element-plus/icons-vue'
 import { taskService } from '../services/task.service'
 
