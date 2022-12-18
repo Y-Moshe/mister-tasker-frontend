@@ -2,7 +2,7 @@ import Axios from 'axios'
 // import { router } from '@/router'
 
 const BASE_URL = process.env.NODE_ENV === 'production'
-    ? '/api/'
+    ? '/api'
     : '//localhost:3030/api'
     // : 'https://mister-tasker-60n7.onrender.com/api'
 
