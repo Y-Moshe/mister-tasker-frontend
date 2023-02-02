@@ -10,6 +10,10 @@ export default defineConfig({
     globals: true,
     environment: "jsdom"
   },
+  build: {
+    outDir: '../backend/public',
+    emptyOutDir: true
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

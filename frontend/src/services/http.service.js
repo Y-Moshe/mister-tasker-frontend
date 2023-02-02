@@ -4,7 +4,6 @@ import Axios from 'axios'
 const BASE_URL = process.env.NODE_ENV === 'production'
     ? '/api'
     : '//localhost:3030/api'
-    // : 'https://mister-tasker-60n7.onrender.com/api'
 
 
 const axios = Axios.create({
