@@ -6,23 +6,48 @@ import { taskService } from '../services/task.service'
 import {
   socketService,
   SOCKET_EVENT_WORKER_TASK_ENDED,
-  SOCKET_EVENT_WORKER_TASK_STARTED
+  SOCKET_EVENT_WORKER_TASK_STARTED,
+  SOCKET_EVENT_WORKER_STATUS
 } from '../services/socket.service'
 
-import taskActions from '../components/task-actions.vue'
+import taskPreviewActions from '../components/task-preview-actions.vue'
 import taskPreview from '../components/task-preview.vue'
+import taskActions from '../components/task-actions.vue'
+import workerStatus from '../components/worker-status.vue'
+
+const STATUS = taskService.STATUS
 
 const tasks = ref([])
 const searchForm = ref({ txt: '' })
 const isTaskWorkerRunning = ref(true)
-const workerBtnTxt = computed(() => isTaskWorkerRunning.value ? 'Stop' : 'Start')
-const STATUS = taskService.STATUS
+const totalPercentage = computed(() => {
+  if (!tasks.value.length) return 0; // to avoid NaN warning in case of no tasks
+
+  const finishedTasks = tasks.value.reduce((prev, { status, triesCount }) => {
+    // done status or failed with 5 triesCount counts as "done"
+    if (
+      status === STATUS.DONE ||
+      (status === STATUS.FAILED && triesCount >= 5)
+    ) {
+      // counts as "finished" even if the status is "failed"
+      prev++
+    }
+
+    return prev
+  }, 0)
+
+  // last percentage
+  return (finishedTasks / tasks.value.length) * 100
+})
 
 onMounted(async () => {
   tasks.value = await taskService.getTasks()
 
   socketService.on(SOCKET_EVENT_WORKER_TASK_STARTED, updateTask)
   socketService.on(SOCKET_EVENT_WORKER_TASK_ENDED, updateTask)
+  socketService.on(SOCKET_EVENT_WORKER_STATUS, updateWorkerStatus)
+
+  getWorkerStatus()
 })
 
 onUnmounted(() => {
@@ -45,9 +70,20 @@ async function clearTasks() {
   tasks.value = []
 }
 
-async function toggleTaskWorker() {
-  // await taskService.startWorker()
-  const { isWorkerOn } = await taskService.toggleTaskWorker()
+function toggleTaskWorker() {
+  taskService.toggleTaskWorker()
+}
+
+async function getWorkerStatus() {
+  try {
+    const { isWorkerOn } = await taskService.getWorkerStatus()
+    updateWorkerStatus(isWorkerOn)
+  } catch (err) {
+    console.log('Failed to get worker status')
+  }
+}
+
+function updateWorkerStatus(isWorkerOn) {
   isTaskWorkerRunning.value = isWorkerOn
 }
 
@@ -94,26 +130,31 @@ const handleSearch = debounce(async () => {
   <main>
     <h1>Mister tasker</h1>
 
-    <section class="flex justify-content-between">
-      <router-link to="/task/edit">
-        <el-button type="primary" link>Add task</el-button>
-      </router-link>
-      <el-button type="success" @click="generateTasks(1)">Generate new task</el-button>
-      <el-button type="primary" @click="generateTasks(10)">Generate tasks</el-button>
-      <el-button type="danger" @click="clearTasks">Clear tasks</el-button>
-      <el-button
-        :type="isTaskWorkerRunning ? 'warning' : 'success'"
-        @click="toggleTaskWorker">
-        {{ workerBtnTxt }} service worker
-      </el-button>
-    </section>
-    
+    <el-row class="gap-10">
+      <el-col :xs="24" :sm="{ span: 10, offset: 3 }" :md="{ span: 7, offset: 6 }">
+        <worker-status
+          :status="isTaskWorkerRunning"
+          :percentage="totalPercentage"
+          @change="toggleTaskWorker"
+        />
+      </el-col>
+      <el-col :xs="24" :sm="8" :md="5">
+        <task-actions
+          @generateTask="generateTasks(1)"
+          @generateTasks="generateTasks(10)"
+          @clearAll="clearTasks()"
+        />
+      </el-col>
+    </el-row>
+
+
+    <!-- Search -->
     <el-form style="margin: 15px;">
       <el-input v-model="searchForm.txt" @input="handleSearch" placeholder="Type to search" />
     </el-form>
 
+    <!-- Tasks table -->
     <el-table :data="tasks" height="800" style="width: 100%">
-
       <el-table-column type="expand">
         <template #default="scope">
           <task-preview :task="scope.row" @delete="handleDeleteTask" />
@@ -136,14 +177,12 @@ const handleSearch = debounce(async () => {
 
       <el-table-column label="Actions" min-width="200" align="center">
         <template #default="scope">
-          <task-actions :task="scope.row"
+          <task-preview-actions :task="scope.row"
             @delete="handleDeleteTask"
             @start="handleStartTask"
             @retry="handleStartTask" />
         </template>
       </el-table-column>
-
     </el-table>
   </main>
-
 </template>
