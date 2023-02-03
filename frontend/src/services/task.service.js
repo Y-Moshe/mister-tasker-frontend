@@ -25,7 +25,11 @@ function performTask(task) {
 }
 
 function toggleTaskWorker() {
-  return httpService.put('/task/workerToggle')
+  return httpService.put('/task/worker/toggle')
+}
+
+function getWorkerStatus() {
+  return httpService.get('/task/worker/status')
 }
 
 function deleteTask(taskId) {
@@ -75,6 +79,7 @@ export const taskService = {
   getEmptyTask,
   generateTasks,
   toggleTaskWorker,
+  getWorkerStatus,
   ERRORS,
   STATUS
 }
