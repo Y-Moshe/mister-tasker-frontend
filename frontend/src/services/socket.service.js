@@ -2,6 +2,7 @@ import io from 'socket.io-client'
 
 export const SOCKET_EVENT_WORKER_TASK_STARTED = 'worker-task-started'
 export const SOCKET_EVENT_WORKER_TASK_ENDED = 'worker-task-ended'
+export const SOCKET_EVENT_WORKER_STATUS = 'worker-status'
 
 const SOCKET_EMIT_LOGIN = 'set-user-socket'
 const SOCKET_EMIT_LOGOUT = 'unset-user-socket'
