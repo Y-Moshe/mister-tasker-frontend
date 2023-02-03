@@ -4,6 +4,11 @@
   "scripts": {
     "start:server": "cd backend && npm start",
     "start:client": "cd frontend && npm start",
-    "build:client": "cd frontend && npm run build"
-  }
+    "build:client": "cd frontend && npm run build",
+    "release": "npm version --workspaces --include-workspace-root"
+  },
+  "workspaces": [
+    "./backend",
+    "./frontend"
+  ]
 }
