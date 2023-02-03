@@ -1,18 +1,20 @@
-const taskService = require('./task.service.js')
+const taskService = require('../api/task/task.service')
 
-var isWorkerOn = true
+const workerState = {
+  isWorkerOn: true  
+}
 
 runWorker()
 
 function toggleWorker() {
-    isWorkerOn = !isWorkerOn
-    if (isWorkerOn) runWorker()
-    return isWorkerOn
+    workerState.isWorkerOn = !workerState.isWorkerOn
+    if (workerState.isWorkerOn) runWorker()
+    return workerState.isWorkerOn
 }
 
 async function runWorker() {
   // The isWorkerOn is toggled by the button: "Start/Stop Task Worker"
-  if (!isWorkerOn) return
+  if (!workerState.isWorkerOn) return
   var delay = 3000
   try {
     const task = await _getNextTask()
@@ -51,5 +53,6 @@ async function _getNextTask() {
 }
 
 module.exports = {
-    toggleWorker
+    toggleWorker,
+    workerState
 }

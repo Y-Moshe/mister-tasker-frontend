@@ -1,5 +1,7 @@
 const logger = require('./logger.service')
 
+const SOCKET_EMIT_WORKER_STATUS = 'worker-status'
+
 const SOCKET_EMIT_WORKER_TASK_STARTED = 'worker-task-started'
 const SOCKET_EMIT_WORKER_TASK_ENDED = 'worker-task-ended'
 
@@ -125,5 +127,6 @@ module.exports = {
     // (otherwise broadcast to a room / to all)
     broadcast,
     SOCKET_EMIT_WORKER_TASK_STARTED,
-    SOCKET_EMIT_WORKER_TASK_ENDED
+    SOCKET_EMIT_WORKER_TASK_ENDED,
+    SOCKET_EMIT_WORKER_STATUS
 }

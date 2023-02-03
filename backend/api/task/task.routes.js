@@ -14,8 +14,6 @@ router.post('/generate', controller.generateTasks)
 
 router.post('/', controller.addTask)
 
-router.put('/workerToggle', controller.toggleWorker)
-
 router.put('/:id', controller.updateTask)
 
 router.delete('/:id', controller.removeTask)
@@ -27,5 +25,11 @@ router.put('/:id/start', controller.performTask)
 router.post('/:id/msg', controller.addTaskMsg)
 
 router.delete('/:id/msg/:msgId', controller.removeTaskMsg)
+
+// Worker routes
+
+router.put('/worker/toggle', controller.toggleWorker)
+
+router.get('/worker/status', controller.getWorkerStatus)
 
 module.exports = router

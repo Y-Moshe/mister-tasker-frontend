@@ -1,5 +1,6 @@
-const taskService = require('./task.service.js')
-const workerService = require('./worker.service.js')
+const taskService = require('./task.service')
+const workerService = require('../../services/worker.service')
+const socketService = require('../../services/socket.service')
 
 const logger = require('../../services/logger.service')
 
@@ -80,10 +81,26 @@ function toggleWorker(req, res) {
     // res.json(perfomedTask)
     console.log('toggling worker');
     const isWorkerOn = workerService.toggleWorker()
-    res.json({isWorkerOn})
+    socketService.broadcast({
+      type: socketService.SOCKET_EMIT_WORKER_STATUS,
+      data: isWorkerOn
+    })
+    res.json({ isWorkerOn })
   } catch (error) {
     logger.error('Failed to toggle the worker', err)
     res.status(500).send({ err: 'Failed to toggle the worker' })
+  }
+}
+
+function getWorkerStatus(req, res) {
+  try {
+    console.log('getting worker status');
+    res.json({
+      isWorkerOn: workerService.workerState.isWorkerOn
+    })
+  } catch (error) {
+    logger.error('Failed to get worker status', err)
+    res.status(500).send({ err: 'Failed to get worker status' })
   }
 }
 
@@ -149,5 +166,6 @@ module.exports = {
   addTaskMsg,
   removeTaskMsg,
   generateTasks,
-  removeAllTasks
+  removeAllTasks,
+  getWorkerStatus
 }
