@@ -1,30 +1,18 @@
 <script setup>
-import { taskService } from '../services/task.service'
-defineProps({
-  task: Object
-})
+import { useRouter } from 'vue-router'
+import { CirclePlus, DeleteFilled, Plus, Operation } from '@element-plus/icons-vue'
+defineProps({ task: Object })
+const emit = defineEmits(['generateTask', 'generateTasks', 'clearAll'])
 
-const STATUS = taskService.STATUS
+const router = useRouter()
+const navigateToAddTask = () => router.push('/task/edit')
 </script>
 
 <template>
-  <section class="flex flex justify-content-around">
-    <el-button plain type="success" class="start-btn"
-      @click="$emit('start', task)" v-if="task.status === STATUS.NEW">
-      Start
-    </el-button>
-    <el-button plain type="danger" class="retry-btn"
-      @click="$emit('retry', task)" v-else-if="task.status === STATUS.FAILED">
-      Retry
-    </el-button>
-
-    <router-link :to="'/task/edit/' + task._id" v-if="task.status !== STATUS.RUNNING" class="update-link">
-      <el-button plain>Update</el-button>
-    </router-link>
-
-    <el-button plain type="danger" class="delete-btn"
-      @click="$emit('delete', task._id)" v-if="task.status === STATUS.DONE">
-      Delete
-    </el-button>
-  </section>
+  <el-card class="task-actions">
+    <el-button type="success" :icon="Plus" @click="navigateToAddTask">Add task</el-button>
+    <el-button type="warning" @click="emit('generateTask')" :icon="CirclePlus">Generate single task</el-button>
+    <el-button type="primary" @click="emit('generateTasks')" :icon="Operation">Generate tasks</el-button>
+    <el-button type="danger" @click="emit('clearAll')" :icon="DeleteFilled">Clear all</el-button>
+  </el-card>
 </template>
