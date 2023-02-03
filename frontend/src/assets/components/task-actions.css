@@ -1,0 +1,12 @@
+.task-actions {
+}
+
+.task-actions .el-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.task-actions .el-card__body button {
+  margin: 0;
+}
