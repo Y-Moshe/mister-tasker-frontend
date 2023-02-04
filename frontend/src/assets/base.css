@@ -1,3 +1,7 @@
+html {
+  --el-font-size-base: 16px;
+}
+
 body {
   margin: 0;
 }
@@ -9,4 +13,9 @@ input:focus {
 
 a {
   text-decoration: none;
+}
+
+.collapse-customize {
+  --el-collapse-header-font-size: 16px !important;
+  --el-collapse-content-font-size: 14px !important;
 }

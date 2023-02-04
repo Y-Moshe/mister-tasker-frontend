@@ -21,6 +21,7 @@ const STATUS = taskService.STATUS
 
 const tasks = ref([])
 const searchText = ref('')
+const appBehavior = ref([])
 const isWorkerRunning = ref(true)
 const totalPercentage = computed(() => {
   // to avoid NaN warning in case of no tasks
@@ -117,16 +118,20 @@ const handleSearch = debounce(async () => {
   <main>
     <h1>Mister tasker</h1>
     <p>A priority-queue for tasks, using MongoDB task collection.</p>
-    <p>App behavior:</p>
-    <p>In this app, you have control over the background service that automatically executes a task with the following criteria:</p>
-    <ul>
-      <li>A task that has the highest importance gets executed first!</li>
-      <li>When a task failed, it gets re-executed until it reaches 5 tried count!</li>
-      <li>When the 5 tried count is reached and still in a failed status the task gets skipped in favor of other tasks</li>
-      <li>As for the done percentage it counts as finished since the service does not retry it (it can still get manually retry)</li>
-    </ul>
-    <p>Each task has a description with an error list that describes the error that occurs when failed</p>
-    <p>And with all of that, you get a real-time interaction using WebSockets (sometimes it gets stuck due to render.com limits where the app is hosted)!</p>
+
+    <el-collapse v-model="appBehavior" class="collapse-customize">
+      <el-collapse-item name="1" title="App behavior">
+        <p>In this app, you have control over the background service that automatically executes a task with the following criteria:</p>
+        <ul>
+          <li>A task that has the highest importance gets executed first!</li>
+          <li>When a task failed, it gets re-executed until it reaches 5 tried count!</li>
+          <li>When the 5 tried count is reached and still in a failed status the task gets skipped in favor of other tasks</li>
+          <li>As for the done percentage it counts as finished since the service does not retry it (it can still get manually retry)</li>
+        </ul>
+        <p>Each task has a description with an error list that describes the error that occurs when failed</p>
+        <p>And with all of that, you get a real-time interaction using WebSockets (sometimes it gets stuck due to render.com limits where the app is hosted)!</p>
+      </el-collapse-item>
+    </el-collapse>
 
     <el-row class="gap-10">
       <el-col :xs="24" :sm="{ span: 10, offset: 3 }" :md="{ span: 7, offset: 6 }">
