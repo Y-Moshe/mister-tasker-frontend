@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { capitalize } from 'lodash'
 
 import { taskService } from '../services/task.service'
 
@@ -14,15 +15,8 @@ onMounted(async () => {
   if (taskId) taskToEdit.value = await taskService.getTask(taskId)
 })
 
-const errorsOptions = computed(() => {
-  return [
-    'High Temparture',
-    'Server busy',
-    'Server under maintanence',
-    'Requested resource is no longer available',
-    'Gateway timeout'
-  ]
-})
+const errorsOptions = computed(() => taskService.ERRORS)
+const statusOptions = computed(() => Object.values(taskService.STATUS).map(capitalize))
 
 async function saveTask() {
   const action = taskId ? taskService.updateTask : taskService.addTask
@@ -35,16 +29,17 @@ async function saveTask() {
 <template>
 
   <main class="task-edit">
-    <h1>Task edit</h1>
+    <h1>Task {{ taskId ? 'edit' : 'add' }}</h1>
 
     <el-form :model="taskToEdit" label-width="100">
-
       <el-form-item label="Title">
         <el-input v-model="taskToEdit.title" placeholder="Type a title.." />
       </el-form-item>
 
       <el-form-item label="Status">
-        <el-input v-model="taskToEdit.status" placeholder="Choose a status" />
+        <el-select v-model="taskToEdit.status" placeholder="Choose a status">
+          <el-option v-for="status in statusOptions" :key="status" :label="status" :value="status" />
+        </el-select>
       </el-form-item>
 
       <el-form-item label="Description">
@@ -68,8 +63,6 @@ async function saveTask() {
       <el-form-item>
         <el-button type="primary" @click="saveTask()">Save</el-button>
       </el-form-item>
-
     </el-form>
   </main>
-
 </template>
