@@ -27,8 +27,6 @@ async function getTaskById(req, res) {
 }
 
 async function addTask(req, res) {
-  const { loggedinUser } = req
-
   try {
     const task = req.body
     const addedTask = await taskService.add(task)
@@ -75,10 +73,6 @@ async function performTask(req, res) {
 
 function toggleWorker(req, res) {
   try {
-    // const task = req.body
-    // task._id = req.params.id
-    // const perfomedTask = await taskService.runWorker()
-    // res.json(perfomedTask)
     console.log('toggling worker');
     const isWorkerOn = workerService.toggleWorker()
     socketService.broadcast({
@@ -125,36 +119,6 @@ async function removeAllTasks(req, res) {
   }
 }
 
-async function addTaskMsg(req, res) {
-  const { loggedinUser } = req
-  try {
-    const taskId = req.params.id
-    const msg = {
-      txt: req.body.txt,
-      by: loggedinUser,
-    }
-    const savedMsg = await taskService.addTaskMsg(taskId, msg)
-    res.json(savedMsg)
-  } catch (err) {
-    logger.error('Failed to update task', err)
-    res.status(500).send({ err: 'Failed to update task' })
-  }
-}
-
-async function removeTaskMsg(req, res) {
-  const { loggedinUser } = req
-  try {
-    const taskId = req.params.id
-    const { msgId } = req.params
-
-    const removedId = await taskService.removeTaskMsg(taskId, msgId)
-    res.send(removedId)
-  } catch (err) {
-    logger.error('Failed to remove task msg', err)
-    res.status(500).send({ err: 'Failed to remove task msg' })
-  }
-}
-
 module.exports = {
   getTasks,
   getTaskById,
@@ -163,8 +127,6 @@ module.exports = {
   removeTask,
   performTask,
   toggleWorker,
-  addTaskMsg,
-  removeTaskMsg,
   generateTasks,
   removeAllTasks,
   getWorkerStatus
