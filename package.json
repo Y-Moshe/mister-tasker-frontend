@@ -1,6 +1,6 @@
 {
   "name": "mister-tasker",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "scripts": {
     "start:server": "cd backend && npm start",
     "start:client": "cd frontend && npm start",
