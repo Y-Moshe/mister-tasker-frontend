@@ -1,11 +1,11 @@
 {
   "name": "mister-tasker",
-  "version": "2.0.1",
+  "version": "1.0.0",
   "scripts": {
     "start:server": "cd backend && npm start",
     "start:client": "cd frontend && npm start",
     "build:client": "cd frontend && npm run build",
-    "release": "npm version --workspaces --include-workspace-root"
+    "release": "npm version --workspaces --include-workspace-root --workspaces-update false"
   },
   "workspaces": [
     "./backend",
