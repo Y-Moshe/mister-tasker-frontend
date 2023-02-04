@@ -1,10 +1,10 @@
+const ObjectId = require('mongodb').ObjectId
+
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
 const utilService = require('../../services/util.service')
 const socketService = require('../../services/socket.service')
 const externalService = require('../../services/external.service')
-const ObjectId = require('mongodb').ObjectId
-
 
 async function query(filterBy = { text: '' }) {
   try {
@@ -38,6 +38,10 @@ async function remove(taskId) {
   try {
     const collection = await dbService.getCollection('task')
     await collection.deleteOne({ _id: ObjectId(taskId) })
+    socketService.broadcast(({
+      type: socketService.SOCKET_EMIT_TASK_DELETED,
+      data: taskId
+    }))
     return taskId
   } catch (err) {
     logger.error(`cannot remove task ${taskId}`, err)
@@ -48,7 +52,9 @@ async function remove(taskId) {
 async function removeAll() {
   try {
     const collection = await dbService.getCollection('task')
-    return await collection.deleteMany({})
+    const result = await collection.deleteMany({})
+    socketService.broadcast(({ type: socketService.SOCKET_EMIT_TASKS_CLEARED }))
+    return result
   } catch (err) {
     logger.error(`cannot remove all task`, err)
     throw err
@@ -59,7 +65,13 @@ async function add(task) {
   try {
     const collection = await dbService.getCollection('task')
     await collection.insertOne(task)
-    return _mapTask(task)
+    const addedTask = _mapTask(task)
+
+    socketService.broadcast({
+      type: socketService.SOCKET_EMIT_TASKS_ADDED,
+      data: [addedTask]
+    })
+    return addedTask
   } catch (err) {
     logger.error('cannot insert task', err)
     throw err
@@ -71,7 +83,13 @@ async function generateTasks(count) {
     const tasks = _generateTasks(count)
     const collection = await dbService.getCollection('task')
     await collection.insertMany(tasks)
-    return tasks.map(_mapTask)
+    const generatedTasks = tasks.map(_mapTask)
+
+    socketService.broadcast({
+      type: socketService.SOCKET_EMIT_TASKS_ADDED,
+      data: generatedTasks
+    })
+    return generatedTasks
   } catch (err) {
     logger.error('cannot insert task', err)
     throw err
@@ -80,11 +98,6 @@ async function generateTasks(count) {
 
 async function update(task) {
   try {
-    // const taskToSave = {
-    //     ...task
-    // title: task.title,
-    // importance: task.importance
-    // }
     const taskToSave = utilService.deepCopy(task)
     delete taskToSave._id
 
@@ -93,7 +106,13 @@ async function update(task) {
       { _id: ObjectId(task._id) },
       { $set: taskToSave }
     )
-    return _mapTask(task)
+    const updatedTask = _mapTask(task)
+
+    socketService.broadcast({
+      type: socketService.SOCKET_EMIT_TASK_UPDATED,
+      data: updatedTask
+    })
+    return updatedTask
   } catch (err) {
     logger.error(`cannot update task ${taskId}`, err)
     throw err
@@ -106,7 +125,7 @@ async function perform(task) {
     task.status = 'running'
     await update(task)
     socketService.broadcast({
-      type: socketService.SOCKET_EMIT_WORKER_TASK_STARTED,
+      type: socketService.SOCKET_EMIT_TASK_UPDATED,
       data: task
     })
 
@@ -129,39 +148,10 @@ async function perform(task) {
     task.triesCount++
     await update(task)
     socketService.broadcast({
-      type: socketService.SOCKET_EMIT_WORKER_TASK_ENDED,
+      type: socketService.SOCKET_EMIT_TASK_UPDATED,
       data: task
     })
     return _mapTask(task)
-  }
-}
-
-async function addTaskMsg(taskId, msg) {
-  try {
-    msg.id = utilService.makeId()
-    const collection = await dbService.getCollection('task')
-    await collection.updateOne(
-      { _id: ObjectId(taskId) },
-      { $push: { msgs: msg } }
-    )
-    return msg
-  } catch (err) {
-    logger.error(`cannot add task msg ${taskId}`, err)
-    throw err
-  }
-}
-
-async function removeTaskMsg(taskId, msgId) {
-  try {
-    const collection = await dbService.getCollection('task')
-    await collection.updateOne(
-      { _id: ObjectId(taskId) },
-      { $pull: { msgs: { id: msgId } } }
-    )
-    return msgId
-  } catch (err) {
-    logger.error(`cannot add task msg ${taskId}`, err)
-    throw err
   }
 }
 
@@ -199,8 +189,6 @@ module.exports = {
   add,
   update,
   perform,
-  addTaskMsg,
-  removeTaskMsg,
   generateTasks,
   removeAll,
 }

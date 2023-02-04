@@ -1,8 +1,10 @@
 import io from 'socket.io-client'
 
-export const SOCKET_EVENT_WORKER_TASK_STARTED = 'worker-task-started'
-export const SOCKET_EVENT_WORKER_TASK_ENDED = 'worker-task-ended'
 export const SOCKET_EVENT_WORKER_STATUS = 'worker-status'
+export const SOCKET_EVENT_TASKS_ADDED = 'tasks-added'
+export const SOCKET_EVENT_TASK_UPDATED = 'task-updated'
+export const SOCKET_EVENT_TASK_DELETED = 'task-deleted'
+export const SOCKET_EVENT_TASKS_CLEARED = 'tasks-cleared'
 
 const SOCKET_EMIT_LOGIN = 'set-user-socket'
 const SOCKET_EMIT_LOGOUT = 'unset-user-socket'

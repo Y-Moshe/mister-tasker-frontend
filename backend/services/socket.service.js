@@ -1,9 +1,10 @@
 const logger = require('./logger.service')
 
 const SOCKET_EMIT_WORKER_STATUS = 'worker-status'
-
-const SOCKET_EMIT_WORKER_TASK_STARTED = 'worker-task-started'
-const SOCKET_EMIT_WORKER_TASK_ENDED = 'worker-task-ended'
+const SOCKET_EMIT_TASKS_ADDED = 'tasks-added'
+const SOCKET_EMIT_TASK_UPDATED = 'task-updated'
+const SOCKET_EMIT_TASK_DELETED = 'task-deleted'
+const SOCKET_EMIT_TASKS_CLEARED = 'tasks-cleared'
 
 var gIo = null
 
@@ -126,7 +127,9 @@ module.exports = {
     // Send to all sockets BUT not the current socket - if found
     // (otherwise broadcast to a room / to all)
     broadcast,
-    SOCKET_EMIT_WORKER_TASK_STARTED,
-    SOCKET_EMIT_WORKER_TASK_ENDED,
-    SOCKET_EMIT_WORKER_STATUS
+    SOCKET_EMIT_WORKER_STATUS,
+    SOCKET_EMIT_TASKS_ADDED,
+    SOCKET_EMIT_TASK_UPDATED,
+    SOCKET_EMIT_TASK_DELETED,
+    SOCKET_EMIT_TASKS_CLEARED
 }

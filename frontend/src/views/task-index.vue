@@ -5,9 +5,11 @@ import { capitalize, debounce } from 'lodash'
 import { taskService } from '../services/task.service'
 import {
   socketService,
-  SOCKET_EVENT_WORKER_TASK_ENDED,
-  SOCKET_EVENT_WORKER_TASK_STARTED,
-  SOCKET_EVENT_WORKER_STATUS
+  SOCKET_EVENT_WORKER_STATUS,
+  SOCKET_EVENT_TASKS_ADDED,
+  SOCKET_EVENT_TASK_UPDATED,
+  SOCKET_EVENT_TASK_DELETED,
+  SOCKET_EVENT_TASKS_CLEARED
 } from '../services/socket.service'
 
 import taskPreviewActions from '../components/task-preview-actions.vue'
@@ -18,10 +20,11 @@ import workerStatus from '../components/worker-status.vue'
 const STATUS = taskService.STATUS
 
 const tasks = ref([])
-const searchForm = ref({ txt: '' })
-const isTaskWorkerRunning = ref(true)
+const searchText = ref('')
+const isWorkerRunning = ref(true)
 const totalPercentage = computed(() => {
-  if (!tasks.value.length) return 0; // to avoid NaN warning in case of no tasks
+  // to avoid NaN warning in case of no tasks
+  if (!tasks.value.length) return 0;
 
   const finishedTasks = tasks.value.reduce((prev, { status, triesCount }) => {
     // done status or failed with 5 triesCount counts as "done"
@@ -40,66 +43,54 @@ const totalPercentage = computed(() => {
   return (finishedTasks / tasks.value.length) * 100
 })
 
-onMounted(async () => {
-  tasks.value = await taskService.getTasks()
-
-  socketService.on(SOCKET_EVENT_WORKER_TASK_STARTED, updateTask)
-  socketService.on(SOCKET_EVENT_WORKER_TASK_ENDED, updateTask)
-  socketService.on(SOCKET_EVENT_WORKER_STATUS, updateWorkerStatus)
-
+onMounted(() => {
+  loadTasks()
   getWorkerStatus()
+
+  socketService.on(SOCKET_EVENT_WORKER_STATUS, updateWorkerStatus)
+  socketService.on(SOCKET_EVENT_TASKS_ADDED, addTasks)
+  socketService.on(SOCKET_EVENT_TASK_UPDATED, updateTask)
+  socketService.on(SOCKET_EVENT_TASK_DELETED, deleteTask)
+  socketService.on(SOCKET_EVENT_TASKS_CLEARED, clearAllTasks)
 })
 
 onUnmounted(() => {
-  socketService.off(SOCKET_EVENT_WORKER_TASK_STARTED)
-  socketService.off(SOCKET_EVENT_WORKER_TASK_ENDED)
+  socketService.off(SOCKET_EVENT_WORKER_STATUS)
+  socketService.off(SOCKET_EVENT_TASKS_ADDED)
+  socketService.off(SOCKET_EVENT_TASK_UPDATED)
+  socketService.off(SOCKET_EVENT_TASK_DELETED)
+  socketService.off(SOCKET_EVENT_TASKS_CLEARED)
 })
+
+const loadTasks = async () => tasks.value = await taskService.getTasks()
+async function getWorkerStatus() {
+  const { isWorkerOn } = await taskService.getWorkerStatus()
+  updateWorkerStatus(isWorkerOn)
+}
 
 function updateTask(task) {
   const idx = tasks.value.findIndex(({ _id }) => _id === task._id)
   tasks.value[idx] = task
 }
 
-async function generateTasks(count) {
-  const generatedTasks = await taskService.generateTasks(count)
-  tasks.value.push(...generatedTasks)
-}
+const generateTasks = (count) => taskService.generateTasks(count)
+const addTasks = (_tasks) => tasks.value.push(..._tasks)
 
-async function clearTasks() {
-  await taskService.deleteAllTasks()
-  tasks.value = []
-}
+const clearTasks = () => taskService.deleteAllTasks()
+const clearAllTasks = () => tasks.value = []
 
-function toggleTaskWorker() {
-  taskService.toggleTaskWorker()
-}
-
-async function getWorkerStatus() {
-  try {
-    const { isWorkerOn } = await taskService.getWorkerStatus()
-    updateWorkerStatus(isWorkerOn)
-  } catch (err) {
-    console.log('Failed to get worker status')
-  }
-}
-
-function updateWorkerStatus(isWorkerOn) {
-  isTaskWorkerRunning.value = isWorkerOn
-}
+const toggleTaskWorker = () => taskService.toggleTaskWorker()
+const updateWorkerStatus = (isWorkerOn) => isWorkerRunning.value = isWorkerOn
 
 async function handleStartTask(task) {
-  task.status = STATUS.RUNNING
   const updatedTask = await taskService.performTask(task)
-
-  const idx = tasks.value.findIndex(({ _id }) => _id === task._id)
-  tasks.value[idx] = updatedTask
+  task.status = STATUS.RUNNING
+  updateTask(updatedTask)
 }
 
-async function handleDeleteTask(taskId) {
+const handleDeleteTask = (taskId) => taskService.deleteTask(taskId)
+function deleteTask(taskId) {
   const idx = tasks.value.findIndex(({ _id }) => _id === taskId)
-  if (idx === -1) return
-
-  await taskService.deleteTask(taskId)
   tasks.value.splice(idx, 1)
 }
 
@@ -117,23 +108,19 @@ function getStatusType(status) {
 }
 
 const handleSearch = debounce(async () => {
-  const filterBy = {
-    text: searchForm.value.txt
-  }
+  const filterBy = { text: searchText.value }
   tasks.value = await taskService.getTasks(filterBy)
 }, 500)
-
 </script>
 
 <template>
-
   <main>
     <h1>Mister tasker</h1>
 
     <el-row class="gap-10">
       <el-col :xs="24" :sm="{ span: 10, offset: 3 }" :md="{ span: 7, offset: 6 }">
         <worker-status
-          :status="isTaskWorkerRunning"
+          :status="isWorkerRunning"
           :percentage="totalPercentage"
           @change="toggleTaskWorker"
         />
@@ -147,10 +134,9 @@ const handleSearch = debounce(async () => {
       </el-col>
     </el-row>
 
-
     <!-- Search -->
     <el-form style="margin: 15px;">
-      <el-input v-model="searchForm.txt" @input="handleSearch" placeholder="Type to search" />
+      <el-input v-model="searchText" @input="handleSearch" placeholder="Type to search" />
     </el-form>
 
     <!-- Tasks table -->
