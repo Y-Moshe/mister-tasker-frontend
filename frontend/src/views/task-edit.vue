@@ -16,7 +16,7 @@ onMounted(async () => {
 })
 
 const errorsOptions = computed(() => taskService.ERRORS)
-const statusOptions = computed(() => Object.values(taskService.STATUS).map(capitalize))
+const statusOptions = computed(() => Object.values(taskService.STATUS))
 
 async function saveTask() {
   const action = taskId ? taskService.updateTask : taskService.addTask
@@ -38,7 +38,7 @@ async function saveTask() {
 
       <el-form-item label="Status">
         <el-select v-model="taskToEdit.status" placeholder="Choose a status">
-          <el-option v-for="status in statusOptions" :key="status" :label="status" :value="status" />
+          <el-option v-for="status in statusOptions" :key="status" :label="capitalize(status)" :value="status" />
         </el-select>
       </el-form-item>
 
