@@ -129,7 +129,7 @@ const handleSearch = debounce(async () => {
           <li>As for the done percentage it counts as finished since the service does not retry it (it can still get manually retry)</li>
         </ul>
         <p>Each task has a description with an error list that describes the error that occurs when failed</p>
-        <p>And with all of that, you get a real-time interaction using WebSockets (sometimes it gets stuck due to render.com limits where the app is hosted)!</p>
+        <p>And with all of that, you get a real-time interaction using WebSockets (<b>sometimes it gets stuck due to render.com limits where the app is hosted</b>)!</p>
       </el-collapse-item>
     </el-collapse>
 

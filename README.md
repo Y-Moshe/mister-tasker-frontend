@@ -12,7 +12,7 @@ In this app, you have control over the background service that automatically exe
 - As for the done percentage it counts as finished since the service does not retry it (it can still get manually retry)
 
 Each task has a description with an error list that describes the error that occurs when failed  
-And with all of that, you get a real-time interaction using WebSockets (sometimes it gets stuck due to render.com limits where the app is hosted)!  
+And with all of that, you get a real-time interaction using WebSockets (**sometimes it gets stuck due to render.com limits where the app is hosted**)!  
 
 **[DEMO WEBSITE](https://mister-tasker-8ecc.onrender.com/)**
 
