@@ -1,4 +1,4 @@
 module.exports = {
-  dbURL: 'mongodb+srv://mistertasker:1234@tasks.lgxhdaq.mongodb.net/?retryWrites=true&w=majority',
+  dbURL: process.env.DB_CONNECTION_STRING,
   dbName : 'task_db'
 }

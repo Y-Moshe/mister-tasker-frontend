@@ -18,6 +18,7 @@ if (process.env.NODE_ENV === 'production') {
     credentials: true,
   }
   app.use(cors(corsOptions))
+  require('dotenv').config()
 }
 
 const taskRoutes = require('./api/task/task.routes')
