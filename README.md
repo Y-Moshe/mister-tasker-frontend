@@ -1,4 +1,4 @@
-# Mister-Tasker
+# Tasker Prioritize
 ![all-devices-black (1)](frontend/src/assets/all-devices-black.png)
 A small project, yet a favorite one!
 
@@ -14,7 +14,7 @@ In this app, you have control over the background service that automatically exe
 Each task has a description with an error list that describes the error that occurs when failed  
 And with all of that, you get a real-time interaction using WebSockets (**sometimes it gets stuck due to render.com limits where the app is hosted**)!  
 
-**[DEMO WEBSITE](https://mister-tasker-8ecc.onrender.com/)**
+**[DEMO WEBSITE](https://tasker-prioritize.onrender.com/)**
 
 ## Build with
 

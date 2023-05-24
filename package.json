@@ -1,5 +1,5 @@
 {
-  "name": "mister-tasker",
+  "name": "tasker-prioritize",
   "version": "2.0.6",
   "scripts": {
     "start:server": "cd backend && npm start",

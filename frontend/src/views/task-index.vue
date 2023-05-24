@@ -116,7 +116,7 @@ const handleSearch = debounce(async () => {
 
 <template>
   <main>
-    <h1>Mister tasker</h1>
+    <h1>Tasker Prioritize</h1>
     <p>A priority-queue for tasks, using MongoDB task collection.</p>
 
     <el-collapse v-model="appBehavior" class="collapse-customize">
